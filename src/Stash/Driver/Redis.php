@@ -157,23 +157,6 @@ class Redis extends AbstractDriver
     }
 
     /**
-     * Properly close the connection.
-     */
-    public function __destruct()
-    {
-        if ($this->redis instanceof \Redis) {
-            try {
-                $this->redis->close();
-            } catch (\RedisException $e) {
-                /*
-                 * \Redis::close will throw a \RedisException("Redis server went away") exception if
-                 * we haven't previously been able to connect to Redis or the connection has severed.
-                 */
-            }
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getData($key)
