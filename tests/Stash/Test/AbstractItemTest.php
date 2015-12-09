@@ -14,7 +14,6 @@ namespace Stash\Test;
 use Stash\Item;
 use Stash\Utilities;
 use Stash\Driver\Ephemeral;
-
 use Stash\Test\Stubs\PoolGetDriverStub;
 
 /**
@@ -152,17 +151,21 @@ abstract class AbstractItemTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $item->get(), 'Item without key returns null for get.');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Item requires keys as arrays.
-     */
     public function testGetItemInvalidKey()
     {
-        $item = $this->getItem();
-        $poolStub = new PoolGetDriverStub();
-        $poolStub->setDriver(new Ephemeral(array()));
-        $item->setPool($poolStub);
-        $item->setKey('This is not an array');
+        try {
+            $item = $this->getItem();
+            $poolStub = new PoolGetDriverStub();
+            $poolStub->setDriver(new Ephemeral(array()));
+            $item->setPool($poolStub);
+            $item->setKey('This is not an array');
+        } catch (\Throwable $t) {
+            return;
+        } catch (\Exception $expected) {
+            return;
+        }
+
+        $this->fail('An expected exception has not been raised.');
     }
 
     public function testLock()
@@ -222,7 +225,7 @@ abstract class AbstractItemTest extends \PHPUnit_Framework_TestCase
         $sleepTime = ($end - $start) * 1000;
 
         $this->assertGreaterThan(500, $sleepTime, 'Sleep method sleeps for required time.');
-        $this->assertLessThan(510, $sleepTime, 'Sleep method does not oversleep.');
+        $this->assertLessThan(520, $sleepTime, 'Sleep method does not oversleep.');
 
         unset($sleepStash);
 
